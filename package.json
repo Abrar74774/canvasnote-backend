@@ -1,0 +1,15 @@
+{
+  "name": "canvasnote-backend",
+  "version": "0.1.0",
+  "description": "backend api server for canvasnote at https://abrar74774.github.io/canvasnote/",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index"
+  },
+  "author": "Abrar74774",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
