@@ -3,7 +3,7 @@ import cors from 'cors';
 
 const app = express();
 const port = process.env.PORT || 8080;
-const whitelist = [process.env.TEST_IP, 'https://abrar74774.github.io/canvasnote']
+const whitelist = ['http://localhost:5173/canvasnote/', 'https://abrar74774.github.io/canvasnote']
 
 app.use(cors({
     origin: function (origin, callback) {
