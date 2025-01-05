@@ -1,25 +1,23 @@
-import express from 'express'
+import dotenv from 'dotenv';
+dotenv.config();
+import express from 'express';
 import cors from 'cors';
+import db from './db.js';
+
+import users from './routes/users.js';
+import canvases from './routes/canvases.js';
+
 
 const app = express();
 const port = process.env.PORT || 8080;
-const whitelist = ['http://localhost:5173/canvasnote/', 'https://abrar74774.github.io/canvasnote']
 
 app.use(cors());
-    // {
-    // origin: function (origin, callback) {
-    //     if (whitelist.indexOf(origin) !== -1) {
-    //       callback(null, true)
-    //     } else {
-    //       callback(new Error('Not allowed by CORS'))
-    //     }
-    // }
-// }
+app.use(express.json());
+app.use('/api/users', users);
+app.use('/api/canvases', canvases);
 
-app.get('/', function (req, res) {
-    return res.send('Backend in development');
-});
+db().catch(err => console.error(err));
 
-app.listen((port), () => {
-    console.log(`Server started at ${port}`);
+app.listen(port, () => {
+  console.log(`Server started at http://localhost:${port}`);
 });
