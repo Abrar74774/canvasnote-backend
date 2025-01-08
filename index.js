@@ -4,7 +4,7 @@ import express from 'express';
 import cors from 'cors';
 import db from './db.js';
 
-import users from './routes/users.js';
+import user from './routes/user.js';
 import canvases from './routes/canvases.js';
 
 
@@ -13,7 +13,7 @@ const port = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(express.json());
-app.use('/api/users', users);
+app.use('/api/user', user);
 app.use('/api/canvases', canvases);
 
 db().catch(err => console.error(err));
