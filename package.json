@@ -8,6 +8,9 @@
     "start": "node index",
     "dev": "nodemon index"
   },
+  "engines": {
+    "node": ">=18.18.0 <23.0.0"
+  },
   "author": "Abrar74774",
   "license": "ISC",
   "dependencies": {
