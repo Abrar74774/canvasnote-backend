@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import Canvas from '../models/Canvas.js';
 import User from '../models/User.js';
 import { checkAuth, logAnyMissingParams } from '../utils.js';
 
@@ -9,7 +8,7 @@ router.post('/test', checkAuth, (req, res) => {
     res.sendStatus(200)
 })
 
-// ADD / UPDATE CANVAS
+// ADD or UPDATE CANVAS
 router.route('/').post(checkAuth, updateCanvas).put( checkAuth, updateCanvas);
 
 // RENAME CANVAS
@@ -65,7 +64,7 @@ router.delete('/', async (req, res) => {
 async function updateCanvas(req, res) {
     try {
         const { username, canvasName, canvasData } = req.body;
-        const missing = logAnyMissingParams(req.body,  'username', 'canvasName', 'canvasData')
+        const missing = logAnyMissingParams(req.body,  'username', 'canvasName')
         if (missing.length) {
             return res.status(400).json({ error: missing })
         }

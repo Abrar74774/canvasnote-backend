@@ -2,7 +2,7 @@ import { serialize } from 'cookie'
 import jwt from 'jsonwebtoken'
 import { Router } from 'express';
 import User from '../models/User.js';
-import { logAnyMissingParams } from '../utils.js';
+import { checkAuth, logAnyMissingParams } from '../utils.js';
 
 const router = Router();
 
@@ -28,7 +28,7 @@ router.post('/', /*jwtCheck,*/ async (req, res) => {
         const existingUser = await User.findOne({ email });
 
         if (existingUser) {
-            return res.status(409).json({ error: 'User already exists' });
+            return res.status(409).json({ error: 'Provided email is already registered' });
         }
 
         const newUser = {
@@ -48,6 +48,7 @@ router.post('/', /*jwtCheck,*/ async (req, res) => {
     }
 });
 
+
 router.post("/login", async (req, res, next) => {
     let { email, password } = req.body;
 
@@ -58,7 +59,6 @@ router.post("/login", async (req, res, next) => {
     }
 
     try {
-        //Creating jwt token
         const token = jwt.sign(
             {
                 userId: existingUser.id,
@@ -79,14 +79,9 @@ router.post("/login", async (req, res, next) => {
     }
 });
 
-router.post('/logout', async (req, res) => {
+
+router.post('/logout', checkAuth, async (req, res) => {
     try {
-        const token = await extractToken(req);
-
-        if(!token) {
-            return res.status(401).json({ error: 'Unauthorized user' });
-        }
-
         // set to empty 
         const tokenCookie = serialize('token', '', cookieOptions);
 
