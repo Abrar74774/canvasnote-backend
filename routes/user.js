@@ -1,4 +1,4 @@
-import { serialize } from 'cookie'
+import { parse, serialize } from 'cookie'
 import jwt from 'jsonwebtoken'
 import { Router } from 'express';
 import User from '../models/User.js';
@@ -8,16 +8,16 @@ const router = Router();
 
 const cookieOptions = {
     httpOnly: true,
-    path: '/',
+    // path: '/',
     maxAge: process.env.TOKEN_TTL,
-    expires: Date.now() + parseInt(process.env.TOKEN_TTL),
-    // sameSite: 'strict', // strict
+    // expires: Date.now() + parseInt(process.env.TOKEN_TTL),
+    sameSite: 'lax', // strict
     // domain: process.env.FRONTEND_URL, // your domain
     // secure: true// true
 };
 
 // REGISTER
-router.post('/', /*jwtCheck,*/ async (req, res) => {
+router.post('/register', async (req, res) => {
     try {
         const { email, username, password } = req.body;
         const missing = logAnyMissingParams(req.body, 'email', 'username', 'password')
@@ -41,6 +41,9 @@ router.post('/', /*jwtCheck,*/ async (req, res) => {
         const user = new User({ ...newUser });
         user.save();
 
+        delete newUser.password;
+        delete newUser.email;
+
         return res.status(201).json({ message: `User of username ${newUser.username} created`, data: newUser });
     } catch (error) {
         console.error("Error on Register:", error);
@@ -58,6 +61,8 @@ router.post("/login", async (req, res, next) => {
         return res.status(409).json({ error: 'Invalid details' });
     }
 
+    const { username, canvases } = existingUser
+
     try {
         const token = jwt.sign(
             {
@@ -71,7 +76,14 @@ router.post("/login", async (req, res, next) => {
         const tokenCookie = serialize('token', token, cookieOptions);
         res.setHeader('Set-Cookie', [tokenCookie]);
         
-        res.status(200).json({message: "success"});
+        res.status(200).json({
+            message: "success",
+            user: {
+                username,
+                email,
+                initialCanvases: canvases
+            }
+        });
 
     } catch (err) {
         console.log('Error authenticating', err);
@@ -82,8 +94,7 @@ router.post("/login", async (req, res, next) => {
 
 router.post('/logout', checkAuth, async (req, res) => {
     try {
-        // set to empty 
-        const tokenCookie = serialize('token', '', cookieOptions);
+        const tokenCookie = serialize('token', 'token', { ...cookieOptions, maxAge: 0 });
 
         res.setHeader('Set-Cookie', [tokenCookie]);
         res.status(200).json({message: "success"});

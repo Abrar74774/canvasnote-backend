@@ -11,7 +11,10 @@ import canvases from './routes/canvases.js';
 const app = express();
 const port = process.env.PORT || 8080;
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true
+}));
 app.use(express.json());
 app.use('/api/user', user);
 app.use('/api/canvases', canvases);

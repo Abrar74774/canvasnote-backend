@@ -7,6 +7,10 @@ export const logAnyMissingParams = (body, ...fields) => {
 } 
 
 export const checkAuth = async (req, res, next) => {
+    if (!req.headers.cookie) {
+        res.sendStatus(401)
+        return
+    }
     const cookies = parse(req.headers.cookie)
     const token = cookies.token;
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
